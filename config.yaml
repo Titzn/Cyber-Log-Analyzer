@@ -1,0 +1,17 @@
+log_file_path: /var/log/auth.log
+report_path: reports
+report_format: html
+
+patterns:
+  failed_login: "Failed password"
+  successful_login: "Accepted password"
+
+alert:
+  from_email: "your_email@example.com"
+  to_email: "admin@example.com"
+  smtp_server: "smtp.example.com"
+  smtp_port: 587
+  password: "your_email_password"
+
+alert_thresholds:
+  failed_attempts: 5
