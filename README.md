@@ -1,6 +1,6 @@
 # Cyber Log Analyzer
 
-Cyber Log Analyzer is an advanced Python tool designed to analyze server authentication logs and detect potential intrusion attempts. It scans log files for suspicious activities like brute-force attacks and unusual login patterns, and sends alerts when necessary.
+Cyber Log Analyzer is an advanced Python tool designed to analyze server authentication logs and detect potential intrusion attempts. It scans log files for suspicious activities like brute-force attacks and unusual login patterns and sends alerts when necessary.
 
 ## Features
 
@@ -8,26 +8,33 @@ Cyber Log Analyzer is an advanced Python tool designed to analyze server authent
 - **Successful Login Tracking**: Tracks successful logins and identifies unusual patterns.
 - **Geolocation of IPs**: Identifies the geographical location of the IPs involved in suspicious activities.
 - **Email Notifications**: Sends email alerts when suspicious activities are detected.
-- **Customizable Reports**: Generates HTML or CSV reports with details about the detected activities.
-- **Configurable via YAML**: Easily customizable thresholds, patterns, and report formats via a configuration file.
-- **Enhanced Logging**: Includes detailed logging of operations and errors.
+- **Customizable Reports**: Generates HTML and CSV reports with details about detected activities.
+- **Configurable via YAML**: Easily customizable thresholds and patterns via a configuration file.
 
 ## Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
 
     ```bash
     git clone https://github.com/Titzn/cyber_log_analyzer.git
     cd cyber_log_analyzer
     ```
 
-2. Install the dependencies:
+2. **Install dependencies**:
 
     ```bash
     pip install -r requirements.txt
     ```
 
-3. Configure the `config.yaml` file with your email, log file path, and other settings.
+## Configuration
+
+1. **Edit the configuration file**:
+
+   Open `config.yaml` and update the configuration as needed. Ensure the `log_file_path` points to your server's authentication log file and that the email settings are correct.
+
+2. **Set up email alerts**:
+
+   Ensure the SMTP settings in `config.yaml` are correct for your email provider. You may need to allow "less secure apps" if using Gmail or use an app password.
 
 ## Usage
 

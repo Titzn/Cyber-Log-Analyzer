@@ -1,17 +1,17 @@
-log_file_path: /var/log/auth.log
-report_path: reports
-report_format: html
+log_file_path: /var/log/auth.log  # Path to the log file to be analyzed
+report_path: reports              # Directory where reports will be saved
+report_format: html               # Report format: 'html' or 'csv'
 
 patterns:
-  failed_login: "Failed password"
-  successful_login: "Accepted password"
+  failed_login: "Failed password"    # Pattern to identify failed logins
+  successful_login: "Accepted password"  # Pattern to identify successful logins
 
 alert:
-  from_email: "your_email@example.com"
-  to_email: "admin@example.com"
-  smtp_server: "smtp.example.com"
-  smtp_port: 587
-  password: "your_email_password"
+  from_email: "your_email@example.com"  # Email address to send alerts from
+  to_email: "admin@example.com"         # Email address to send alerts to
+  smtp_server: "smtp.example.com"       # SMTP server for sending emails
+  smtp_port: 587                        # SMTP server port
+  password: "your_email_password"       # Password for SMTP authentication
 
 alert_thresholds:
-  failed_attempts: 5
+  failed_attempts: 5  # Number of failed attempts before an alert is triggered
