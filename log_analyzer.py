@@ -3,6 +3,7 @@ import yaml
 import argparse
 import pandas as pd
 import logging
+import os
 from datetime import datetime
 from collections import defaultdict
 from utils.geoip import geolocate_ip
@@ -13,14 +14,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def load_config(config_path):
     """Load configuration from a YAML file."""
+    if not os.path.exists(config_path):
+        logging.error(f"Configuration file not found: {config_path}")
+        raise FileNotFoundError(f"Configuration file {config_path} not found.")
+    
     try:
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
             logging.info(f"Configuration loaded successfully from {config_path}")
             return config
-    except FileNotFoundError:
-        logging.error(f"Configuration file not found: {config_path}")
-        raise
     except yaml.YAMLError as e:
         logging.error(f"Error parsing YAML configuration: {e}")
         raise
@@ -32,6 +34,10 @@ def analyze_log(file_path, patterns):
     """Analyze the log file for failed and successful login attempts."""
     failed_attempts = defaultdict(int)
     successful_logins = defaultdict(list)
+
+    if not os.path.exists(file_path):
+        logging.error(f"Log file not found: {file_path}")
+        return failed_attempts, successful_logins
 
     try:
         with open(file_path, 'r') as file:
@@ -46,8 +52,6 @@ def analyze_log(file_path, patterns):
                     timestamp = extract_timestamp(log)
                     if timestamp:
                         successful_logins[ip].append(timestamp)
-    except FileNotFoundError:
-        logging.error(f"Log file not found: {file_path}")
     except Exception as e:
         logging.error(f"Error processing log file: {e}")
 
@@ -61,8 +65,9 @@ def extract_ip(log_entry):
 def extract_timestamp(log_entry):
     """Extract the timestamp from a log entry."""
     try:
-        return datetime.strptime(log_entry.split()[0], "%b %d %H:%M:%S")
-    except ValueError:
+        timestamp_str = log_entry.split()[0]  # Modify as per actual log format
+        return datetime.strptime(timestamp_str, "%b %d %H:%M:%S")
+    except (ValueError, IndexError):
         logging.warning(f"Failed to parse timestamp in log entry: {log_entry}")
         return None
 
@@ -87,8 +92,12 @@ def generate_report(failed_attempts, successful_logins, report_path, report_form
             'Type': 'Successful Login'
         })
 
+    df = pd.DataFrame(report)
+    
+    if not os.path.exists(report_path):
+        os.makedirs(report_path)
+
     try:
-        df = pd.DataFrame(report)
         if report_format == 'html':
             df.to_html(f'{report_path}/log_analysis_report.html', index=False)
         elif report_format == 'csv':
@@ -106,7 +115,7 @@ def analyze_and_alert(config):
 
     try:
         for ip, attempts in failed_attempts.items():
-            if attempts > config['alert_thresholds']['failed_attempts']:
+            if attempts > config['alert_thresholds'].get('failed_attempts', 5):
                 send_email(
                     config,
                     subject=f"Alert: Multiple failed login attempts from {ip}",
@@ -127,6 +136,8 @@ def analyze_and_alert(config):
             config['report_path'],
             config.get('report_format', 'html')
         )
+    except KeyError as ke:
+        logging.error(f"Missing configuration key: {ke}")
     except Exception as e:
         logging.error(f"Error during analysis or alerting: {e}")
 
